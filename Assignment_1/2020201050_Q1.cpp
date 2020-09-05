@@ -225,6 +225,6 @@ int main()
     // cout << s.size() << endl;
 
     Calculator c;
-    c.evaluate("123123123123%123.0");
+    c.evaluate("54/6524*5644652%(51+2326)*89");
     return 0;
 }
