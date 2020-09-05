@@ -136,22 +136,22 @@ class Calculator {
             m_charStack.pop();
         }
 
-        cout << m_postfixString << endl;
+        // cout << m_postfixString << endl;
     }
 
     double m_evaluate() {
         string token = m_strTok(m_postfixString);
         while(token.length() > 0) {
-            cout << token << endl;
-            cout << "length: " << token.length() << endl;
+            // cout << token << endl;
+            // cout << "length: " << token.length() << endl;
             if(token.length() == 1 && m_isOperator(token[0])) {
-                cout << "operator " << token[0] << endl;
+                // cout << "operator " << token[0] << endl;
                 double a = m_valuesStack.top();
                 m_valuesStack.pop();
                 double b = m_valuesStack.top();
                 m_valuesStack.pop();
                 double c;
-                cout << a << "  " << b << endl;
+                // cout << a << "  " << b << endl;
                 switch(token[0]) {
                     case '*':
                         c = a * b;
@@ -170,7 +170,7 @@ class Calculator {
                         m_valuesStack.push(c);
                         break;
                     case '%':
-                        c = (int)b % (int)a;
+                        c = fmod(b, a);
                         m_valuesStack.push(c);
                         break;
                 }
@@ -225,6 +225,6 @@ int main()
     // cout << s.size() << endl;
 
     Calculator c;
-    c.evaluate("75*854/7953/6490*1641-100");
+    c.evaluate("123123123123%123.0");
     return 0;
 }
