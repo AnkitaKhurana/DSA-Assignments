@@ -145,21 +145,31 @@ public:
         if(m_numElements < m_containerSize / 2 && m_containerSize > 16) { m_resize_container(m_containerSize / 2); }
     }
     bool empty() {
+        cout << (m_numElements == true) << endl;
         return m_numElements == 0;
     }
 
     D front() {
-        if(m_frontPointer < 0) { return NULL; }
+        if(m_frontPointer < 0) { 
+            cout << endl;
+            return NULL;
+        }
+        cout << m_container[m_frontPointer] << endl;
         return m_container[m_frontPointer];
     }
 
     D back() {
-        if(m_backPointer < 0) { return NULL; }
+        if(m_backPointer < 0) { 
+            cout << endl;
+            return NULL;
+        }
         // cout << "back pointer "<< m_backPointer << endl;
+        cout << m_container[m_backPointer] << endl;
         return m_container[m_backPointer];
     }
 
     long long int size() {
+        cout << m_numElements << endl;
         return m_numElements;
     }
 
@@ -192,142 +202,25 @@ public:
 
     // TODO: Delete this function before final submission.
     long long int container_size() {
+        cout << m_containerSize << endl;
         return m_containerSize;
     }
-    
-    // TODO: Delete this function before final submission.
-    long long int num_elements() {
-        return m_numElements;
+
+    void display() {
+        if(m_frontPointer == -1) { return; }
+        long long int i = m_frontPointer;
+        long long int size = m_numElements;
+        
+        while(size--) {
+            cout << m_container[m_frontPointer] << " ";
+            i = (i + 1) % m_containerSize;
+        }
+        return;
     }
-
-
     
-
 };
 
 int main() {
-    // Deque<int> d;
 
-    // for(int i = 0; i < 20; i++) {
-    //     // cout << d.empty() << endl;
-    //     d.push_back(i);
-    //     // cout << "container size " << d.container_size() << endl;
-    //     // cout << "front element " << d.front() << endl;
-    //     // cout << "back element " << d.back() << endl;
-    //     // cout << "number of elements " << d.num_elements() << endl;
-    //     // cout << "*********************************************************" << endl << endl;
-    // }
-
-    // for(int i = 0; i < 20; i++) {
-    //     cout << d[i] << endl;
-    // }
-
-    // d.resize(4, 0);
-
-    // for(int i = 0; i < d.size(); i++) {
-    //     cout << d[i] << endl;
-    // }
-
-    // d.resize(48, 0);
-    
-
-    // // d.resize(2, 0);
-    // for(int i = 0; i < 10; i++) {
-    //     d.push_front(i * 100);
-    // }
-    // for(int i = 0; i < 10; i++) {
-    //     d.push_back(i * 200);
-    // }
-    // for(int i = 0; i < d.size(); i++) {
-    //     cout << i << " "  << d[i] << endl;
-    // }
-
-    // cout << d.front() << endl;
-    // cout << d.back() << endl;
-
-    // Deque<int> d(48, 5);
-    // d.push_back(6);
-    // d.push_front(4);
-    // d.resize(65, 0);
-    // for(int i = 0; i < d.size(); i++) {
-    //     cout << i << " " << d[i] << endl;
-    // }
-
-    // Deque<int> d;
-    // cout << d.back() << endl;
-    // for(int i = 0; i < 3; i++) {
-    //     d.push_front(i);
-    // }
-    // cout << d.container_size() << endl;
-    // cout << d.back() << " " << d.front() << endl;
-    // d.pop_front(); 
-    // cout << d.front() << endl;
-    // d.push_front(2);
-    // d.push_back(11);
-    // for(int i = 0; i < d.size(); i++) {
-    //     cout << d[i] << " ";
-    // }
-    // cout << endl;
-    // d.resize(1, 12);
-    // // cout << d[0] << endl;
-    // for(int i = 0; i < d.size(); i++) {
-    //     cout << d[i] << " ";
-    // }
-    // cout << endl;
-    // d.clear();
-    // d.push_front(7);
-    // d.push_back(5);
-    // for(int i = 0; i < d.size(); i++) {
-    //     cout << d[i] << " ";
-    // }
-    // cout << endl;
-    // d.clear();
-    // d.resize(1, 1);
-    // for(int i = 0; i < d.size(); i++) {
-    //     cout << d[i] << " ";
-    // }
-    // cout << endl;
-
-    Deque<int> d(100000,8);
-
-    cout<<"size : "<<d.size()<<endl;
-
-    int count = 0;
-    for(int i=0; i<d.size(); i++){
-        int temp = d[i];
-        count++;
-    }
-
-    cout<<"1 lakh elements accessed ! "<<count<<endl;
-
-    d.clear();
-
-    cout<<"after clear - size : "<<d.size()<<endl;
-
-    for(int i=0; i<50000; i++){
-        d.push_back(2);
-        d.push_front(1);
-    }
-
-    cout<<"1 lakh elements pushed !"<<endl;
-
-    cout<<"after push - size : "<<d.size()<<endl;
-
-    cout << " now popping" << endl;
-    for(int i=0; i<50000; i++){
-        d.pop_back();
-        d.pop_front();
-    }
-
-    cout<<"1 lakh elements popped !"<<endl;
-
-    cout<<"size : "<<d.size()<<endl;
-
-    d.resize(10,2);
-
-    cout<<"after resize : "<<d.size()<<endl;
-
-    cout<<"front : "<<d.front()<<"  ";
-    cout<<"back : "<<d.back()<<endl;
     return 0;
 }
