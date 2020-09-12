@@ -1,8 +1,87 @@
 #include <bits/stdc++.h>
-#include "Stack.h"
+// #include "Stack.h"
 
 using namespace std;
 
+template <typename S>
+class Stack
+{
+    const long long int m_INIT_SIZE = 16;
+    long long int m_containerSize;
+    long long int m_stackPointer;
+    long long int m_numElements;
+    S* m_container;
+
+    void m_Resize() {
+        if(m_numElements + 1 == m_containerSize) {
+            S* temp = new S[2*m_containerSize];
+            m_containerSize *= 2;
+            m_Copy(temp);
+            delete [] m_container;
+            m_container = temp;
+        }
+        else if((m_numElements < (m_containerSize/2)) && (m_containerSize > m_INIT_SIZE)) {
+            S* temp = new S[m_containerSize/2];
+            m_containerSize /= 2;
+            m_Copy(temp);
+            delete [] m_container;
+            m_container = temp;
+        }
+    }
+
+    void m_Copy(S* t_temp) {
+        for(int i = 0; i < m_numElements; i++) {
+            t_temp[i] = m_container[i];
+        }
+        return;
+    }
+
+
+public:
+    Stack(): m_containerSize(m_INIT_SIZE), m_stackPointer(0), m_numElements(0) {
+        m_container = new S[m_containerSize];
+    }   
+
+    void push(S t_ip) {
+        m_container[m_stackPointer++] = t_ip;
+        m_numElements++;
+        m_Resize();
+        return;
+    }
+
+    void pop() {
+        if( !m_numElements ) return;
+        m_stackPointer--;
+        m_numElements--;
+        m_Resize();
+        return;
+    }
+
+    long long int size() {
+        return m_numElements;
+    }
+
+    S top() {
+        if(m_numElements < 1) return NULL;
+        return m_container[m_numElements - 1];
+    }
+
+    bool empty() {
+        return m_numElements == 0;
+    }
+
+    void clear() {
+        m_numElements = 0;
+        m_stackPointer = 0;
+        m_Resize();
+        return;
+    }
+        
+    //TODO: delete this method. Its purpose is only for debugging
+    // S containerSize() {
+    //     return m_containerSize;
+    // }
+};
 
 class Calculator {
     Stack<char> m_charStack;
@@ -71,7 +150,6 @@ class Calculator {
 
     static string m_strTok(string t_s) {
         static int index = 1;
-        // cout << "string size = "<< t_s.length() << " and index = " << index << endl;
         if(index >= t_s.length()) {
             return "";
         }
@@ -87,8 +165,6 @@ class Calculator {
         
         int startIndex = 0;
         for(int i = 0; i < strLen; i++) {
-            // cout << "postfix string " << m_postfixString << endl;
-            // cout << "now doing for " << m_ipString[i] << endl;
 
             // If a number or double, directly add it to output string
             if(m_isDigit(m_ipString[i]) || m_isDecimal(m_ipString[i])) {
@@ -110,7 +186,6 @@ class Calculator {
             // If closed bracket, pop till open bracket is encountered
             if(m_isClosedBracket(m_ipString[i])) {
                 while(!m_charStack.empty() && m_charStack.top() != '(') {
-                    // cout << m_charStack.top() << " is at the top " << endl;
                     m_postfixString += " " + string(1, m_charStack.top());
                     m_charStack.pop();
                 }
@@ -129,29 +204,22 @@ class Calculator {
             }
         }
 
-        // cout << m_charStack.size() << endl;
-        // cout << " "  + string(1, m_charStack.top()) << endl;
         while(!m_charStack.empty()) {
             m_postfixString += ' ' + string(1, m_charStack.top());
             m_charStack.pop();
         }
-
-        // cout << m_postfixString << endl;
     }
 
     double m_evaluate() {
         string token = m_strTok(m_postfixString);
         while(token.length() > 0) {
-            // cout << token << endl;
-            // cout << "length: " << token.length() << endl;
             if(token.length() == 1 && m_isOperator(token[0])) {
-                // cout << "operator " << token[0] << endl;
                 double a = m_valuesStack.top();
                 m_valuesStack.pop();
                 double b = m_valuesStack.top();
                 m_valuesStack.pop();
                 double c;
-                // cout << a << "  " << b << endl;
+
                 switch(token[0]) {
                     case '*':
                         c = a * b;
@@ -180,7 +248,6 @@ class Calculator {
             }
             token = m_strTok(m_postfixString);
         }
-        // cout << fixed << std::setprecision(5) << m_valuesStack.top() << endl;
         return m_valuesStack.top();
     }
 
@@ -201,30 +268,9 @@ public:
 
 int main()
 {
-    setprecision(9);
-    // Stack<int> s;
-    // for(int i = 0; i < 20; i++) {
-    //     s.push(i);
-    //     cout << "inserted " << i << endl;
-    //     cout << "top " << s.top() << endl;
-    //     cout << "size " << s.size() << endl;
-    //     cout << "container size " << s.containerSize() << endl;
-    //     cout << endl;
-    // }
-
-
-    // for(int i = 0; i < 7; i++) {
-    //     s.pop();
-    //     cout << "top " << s.top() << endl;
-    //     cout << "size " << s.size() << endl;
-    //     cout << "container size " << s.containerSize() << endl;
-    //     cout << endl;
-    // }
-
-    
-    // cout << s.size() << endl;
-
     Calculator c;
-    c.evaluate("54/6524*5644652%(51+2326)*89");
+    string s;
+    cin >> s;
+    c.evaluate(s);
     return 0;
 }
