@@ -87,12 +87,18 @@ class AVL_Tree {
 
         if(abs(_height(root ->_left) - _height(root -> _right)) >= 2) {
             // cout << root ->_data << " is disbalanced " << endl;
-            root = _balance(root, ip);
+            root = _insert_balance(root, ip);
         }
         return root;
     }
 
-    Node<T>* _balance(Node<T>* (&root), T ip) {
+    int _get_balance(Node<T>* root) {
+        if(!root) {
+            return 0;
+        }
+        return _height(root ->_left) - _height(root -> _right);
+    }
+    Node<T>* _insert_balance(Node<T>* (&root), T ip) {
         // L-R Imbalance
         if(root -> _left && !_comparator(root -> _data, ip) && _comparator(root -> _left -> _data, ip)) {
             // cout << "R-L Imbalance" << endl;
@@ -244,9 +250,11 @@ class AVL_Tree {
         if(!root) {
             return root;
         }
-
+        // cout << "at " << root->_data << " for deleting "<< ip << endl;
         if(root->_data == ip) {
+            // cout << "element to be deleted matched " << endl;
             if( _is_leaf(root)) {
+                // cout << "is leaf" << endl;
                 if(root -> _count > 1) {
                     root -> _count--;
                     return root;
@@ -255,6 +263,7 @@ class AVL_Tree {
                 return NULL;
             }
             else if(!root->_left || !root->_right) {
+                // cout << "has single child" << endl;
                 if(root -> _count > 1) {
                     root -> _count--;
                     return root;
@@ -264,19 +273,45 @@ class AVL_Tree {
                 
             }
             else {
+                // cout << "double children" << endl;
                 if(root -> _count > 1) {
                     root -> _count--;
                     return root;
                 }
                 Node<T>* temp = _find_min(root -> _right);
+                // cout << "swapped " << root->_data << " with " << temp->_data << endl;
                 root->_data = temp->_data;
                 root->_right = _delete(root->_right, temp->_data);
+                // cout << root->_data << "'s right is now" << root->_right->_data << endl;
                 root -> _height = max(_height(root->_left), _height(root -> _right)) + 1;
 
                 root -> _elements_right = root -> _right ? _elements_right(root->_right) + _elements_left(root ->_right) + root->_right->_count : 0;
                 root -> _elements_left = root -> _left ? _elements_left(root -> _left) + _elements_right(root -> _left) + root->_left->_count : 0; 
                 // cout << root ->_data << " height is " << root -> _height << endl;
-                root = _check_balance(root, ip);
+
+                int balance = _get_balance(root);
+
+                if (balance > 1 &&  _get_balance(root->_left) >= 0)  
+                    return _right_rotate(root);  
+            
+                // Left Right Case  
+                if (balance > 1 &&  _get_balance(root->_left) < 0)  
+                {  
+                    root->_left = _left_rotate(root->_left);  
+                    return _right_rotate(root);  
+                }  
+            
+                // Right Right Case  
+                if (balance < -1 &&  _get_balance(root->_right) <= 0)  
+                    return _left_rotate(root);  
+            
+                // Right Left Case  
+                if (balance < -1 &&  _get_balance(root->_right) > 0)  
+                {  
+                    root->_right = _right_rotate(root->_right);  
+                    return _left_rotate(root);  
+                }  
+                // root = _check_balance(root, ip);
                 // cout << "balanced check inside insert" << endl;
                 // cout << "now root is " << root -> _data << endl;
                 // cout << "right child of " << root -> _data << " is " << get_elements_right(root->_data) << endl;
@@ -293,11 +328,32 @@ class AVL_Tree {
                 root->_left = _delete(root->_left, ip);
             }
             root -> _height = max(_height(root->_left), _height(root -> _right)) + 1;
-
+            // cout << "height of " << root->_data << " is updated to " << root->_height << endl;
             root -> _elements_right = root -> _right ? _elements_right(root->_right) + _elements_left(root ->_right) + root->_right->_count : 0;
             root -> _elements_left = root -> _left ? _elements_left(root -> _left) + _elements_right(root -> _left) + root->_left->_count : 0; 
             // cout << root ->_data << " height is " << root -> _height << endl;
-            root = _check_balance(root, ip);
+            int balance = _get_balance(root);
+
+                if (balance > 1 &&  _get_balance(root->_left) >= 0)  
+                    return _right_rotate(root);  
+            
+                // Left Right Case  
+                if (balance > 1 &&  _get_balance(root->_left) < 0)  
+                {  
+                    root->_left = _left_rotate(root->_left);  
+                    return _right_rotate(root);  
+                }  
+            
+                // Right Right Case  
+                if (balance < -1 &&  _get_balance(root->_right) <= 0)  
+                    return _left_rotate(root);  
+            
+                // Right Left Case  
+                if (balance < -1 &&  _get_balance(root->_right) > 0)  
+                {  
+                    root->_right = _right_rotate(root->_right);  
+                    return _left_rotate(root);  
+                }
             // cout << "balanced check inside insert" << endl;
             // cout << "now root is " << root -> _data << endl;
             // cout << "right child of " << root -> _data << " is " << get_elements_right(root->_data) << endl;
@@ -530,131 +586,165 @@ int main() {
 
     // tree.inorder();
 
-    a.insert(1);
-    // for(int i = 1; i <= 1; i++) {
+    // a.insert(1);
+    // // for(int i = 1; i <= 1; i++) {
+    // //     cout << i << ": " << a.get_height(i) << "   ";
+    // // }
+    // // cout << endl;
+    // a.insert(2);
+    // a.insert(2);
+    // // for(int i = 1; i <= 2; i++) {
+    // //     cout << i << ": " << a.get_height(i) << "   ";
+    // // }
+    // // cout << endl;
+    // a.insert(5);
+    // a.insert(5);
+    // a.insert(5);
+    // // for(int i = 1; i <= 5; i++) {
+    // //     cout << i << ": " << a.get_height(i) << "   ";
+    // // }
+    // // cout << endl;
+    // a.insert(3);
+    // // for(int i = 1; i <= 5; i++) {
+    // //     cout << i << ": " << a.get_height(i) << "   ";
+    // // }
+    // // cout << endl;
+    // a.insert(4);
+    // a.insert(4);
+    // // for(int i = 1; i <= 5; i++) {
+    // //     cout << i << ": " << a.get_height(i) << "   ";
+    // // }
+    // // cout << endl;
+    // a.insert(6);
+    // // for(int i = 1; i <= 6; i++) {
+    // //     cout << i << ": " << a.get_height(i) << "   ";
+    // // }
+    // // cout << endl;
+    // a.insert(7);
+    // // for(int i = 1; i <= 7; i++) {
+    // //     cout << i << ": " << a.get_height(i) << "   ";
+    // // }
+    // // cout << endl;
+    // a.insert(8);
+    // // a.insert(10);
+    // // a.insert(11);
+    // for(int i = 1; i <= 8; i++) {
     //     cout << i << ": " << a.get_height(i) << "   ";
     // }
     // cout << endl;
-    a.insert(2);
-    a.insert(2);
-    // for(int i = 1; i <= 2; i++) {
-    //     cout << i << ": " << a.get_height(i) << "   ";
-    // }
-    // cout << endl;
-    a.insert(5);
-    a.insert(5);
-    a.insert(5);
-    // for(int i = 1; i <= 5; i++) {
-    //     cout << i << ": " << a.get_height(i) << "   ";
-    // }
-    // cout << endl;
-    a.insert(3);
-    // for(int i = 1; i <= 5; i++) {
-    //     cout << i << ": " << a.get_height(i) << "   ";
-    // }
-    // cout << endl;
-    a.insert(4);
-    a.insert(4);
-    // for(int i = 1; i <= 5; i++) {
-    //     cout << i << ": " << a.get_height(i) << "   ";
-    // }
-    // cout << endl;
-    a.insert(6);
-    // for(int i = 1; i <= 6; i++) {
-    //     cout << i << ": " << a.get_height(i) << "   ";
-    // }
-    // cout << endl;
-    a.insert(7);
-    // for(int i = 1; i <= 7; i++) {
-    //     cout << i << ": " << a.get_height(i) << "   ";
-    // }
-    // cout << endl;
-    a.insert(8);
-    // a.insert(10);
-    // a.insert(11);
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_height(i) << "   ";
-    }
-    cout << endl;
 
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_elements_right(i) << "   ";
-    }
-    cout << endl;
-    // cout << a.elements_in_range(7, 8) << endl;
-    // cout << a.closest_element(9) << endl;
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_elements_right(i) << "   ";
+    // }
+    // cout << endl;
+    // // cout << a.elements_in_range(7, 8) << endl;
+    // // cout << a.closest_element(9) << endl;
 
-    for(int i = 1; i <= 12; i++) {
-        cout << a.kth_largest(i) << " ";
-    }
+    // for(int i = 1; i <= 12; i++) {
+    //     cout << a.kth_largest(i) << " ";
+    // }
 
-    cout << endl;
-    for(int i = 1; i <= 15; i++) {
-        cout << a.search(i) << " ";
-    }
+    // cout << endl;
+    // for(int i = 1; i <= 15; i++) {
+    //     cout << a.search(i) << " ";
+    // }
 
-    cout << endl;
+    // cout << endl;
 
-    cout << "------------------------------------------------------" << endl;
-    a.inorder();
-    cout << endl;
-    a.delete_node(8);
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_height(i) << "   ";
-    }
-    cout << endl;
+    // cout << "------------------------------------------------------" << endl;
+    // a.inorder();
+    // cout << endl;
+    // a.delete_node(8);
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_height(i) << "   ";
+    // }
+    // cout << endl;
 
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_elements_right(i) << "   ";
-    }
-    cout << endl;
-    a.inorder();
-    cout << endl << endl;
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_elements_right(i) << "   ";
+    // }
+    // cout << endl;
+    // a.inorder();
+    // cout << endl << endl;
     
-    a.inorder();
-    cout << endl;
-    a.delete_node(6);
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_height(i) << "   ";
-    }
-    cout << endl;
+    // a.inorder();
+    // cout << endl;
+    // a.delete_node(6);
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_height(i) << "   ";
+    // }
+    // cout << endl;
 
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_elements_right(i) << "   ";
-    }
-    cout << endl;
-    a.inorder();
-    cout << endl << endl;
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_elements_right(i) << "   ";
+    // }
+    // cout << endl;
+    // a.inorder();
+    // cout << endl << endl;
 
-    a.inorder();
-    cout << endl;
-    a.delete_node(2);
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_height(i) << "   ";
-    }
-    cout << endl;
+    // a.inorder();
+    // cout << endl;
+    // a.delete_node(2);
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_height(i) << "   ";
+    // }
+    // cout << endl;
 
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_elements_right(i) << "   ";
-    }
-    cout << endl;
-    a.inorder();
-    cout << endl << endl;
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_elements_right(i) << "   ";
+    // }
+    // cout << endl;
+    // a.inorder();
+    // cout << endl << endl;
 
-    a.inorder();
-    cout << endl;
-    a.delete_node(2);
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_height(i) << "   ";
-    }
-    cout << endl;
+    // a.inorder();
+    // cout << endl;
+    // a.delete_node(2);
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_height(i) << "   ";
+    // }
+    // cout << endl;
 
-    for(int i = 1; i <= 8; i++) {
-        cout << i << ": " << a.get_elements_right(i) << "   ";
-    }
-    cout << endl;
-    a.inorder();
-    cout << endl << endl;
+    // for(int i = 1; i <= 8; i++) {
+    //     cout << i << ": " << a.get_elements_right(i) << "   ";
+    // }
+    // cout << endl;
+    // a.inorder();
+    // cout << endl << endl;
+
+    int n = 1000;
+for (int i = 1; i <= n; i ++) a.insert(i);
+a.inorder();
+cout << endl;
+
+for (int i = 1; i <= n; i += 4) a.delete_node(i);
+// a.delete_node(96);
+a.inorder();
+cout << endl;
+
+// cout << a.get_height(997) << endl;
+// cout << a.get_elements_right(997) << endl;
+
+for (int i = 2; i <= n; i += 4) cout << a.search(i) << " ";
+cout << endl;
+
+for (int i = 1; i <= n; i += 13) a.insert(i);
+a.inorder();
+cout << endl;
+
+for (int i = 1; i <= n; i += 17) cout << a.occurences(i) << " ";
+cout << endl;
+
+for (int i = 1; i <= n; i += 21) cout << a.lower_bound(i) << " ";
+cout << endl;
+
+for (int i = 1; i <= n; i += 11) cout << a.upper_bound(i) << " ";
+cout << endl;
+
+for (int i = 1; i <= 827; i += 7) cout << a.kth_largest(i) << " ";
+cout << endl;
+
+for (int i = 1; i <= n / 2; i += 2) cout << a.elements_in_range(i, n - i) << " ";
 
     
     return 0;
